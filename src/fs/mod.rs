@@ -295,12 +295,20 @@ pub trait DiskFS {
     fn stat(&mut self) -> Result<Stat,DYNERR>;
     /// Directory listing to standard output in the file system's native style
     fn catalog_to_stdout(&mut self, path: &str) -> STDRESULT;
+    /// Directory listing to standard output with optional verbose output
+    fn catalog_to_stdout_with_options(&mut self, path: &str, verbose: bool) -> STDRESULT {
+        self.catalog_to_stdout(path)
+    }
     /// Get directory listing as a Vec<String>.
     /// The rows are in an easily parsed fixed column format that is the same for all file systems.
     /// Columns 0..4 are the type/extension, 5..10 are the block count, 12.. is the basename.
     /// For flat file systems, the path must be "" or "/", or else an error is returned.
     /// For any file system, if the path resolves to a file, an error is returned.
     fn catalog_to_vec(&mut self, path: &str) -> Result<Vec<String>,DYNERR>;
+    /// Get directory listing as a Vec<String> with optional verbose output
+    fn catalog_to_vec_with_options(&mut self, path: &str, verbose: bool) -> Result<Vec<String>,DYNERR> {
+        self.catalog_to_vec(path)
+    }
     /// Return vector of paths based on the glob pattern
     fn glob(&mut self,pattern: &str,case_sensitive: bool) -> Result<Vec<String>,DYNERR>;
     /// Get the file system tree as a JSON string

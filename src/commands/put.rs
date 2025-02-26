@@ -42,7 +42,19 @@ pub fn pack(cmd: &clap::ArgMatches) -> STDRESULT {
     let typ = ItemType::from_str(cmd.get_one::<String>("type").unwrap())?;
     let maybe_chunk_len = cmd.get_one::<u16>("block");
     let load_addr: Option<usize> = match cmd.get_one::<String>("addr") {
-        Some(a) => Some(usize::from_str(a)?),
+        Some(a) => {
+            // Check if the address is in hex format (starts with $ or 0x)
+            if a.starts_with("$") {
+                // Parse as hex, skipping the $ prefix
+                Some(usize::from_str_radix(&a[1..], 16)?)
+            } else if a.to_lowercase().starts_with("0x") {
+                // Parse as hex, skipping the 0x prefix
+                Some(usize::from_str_radix(&a[2..], 16)?)
+            } else {
+                // Parse as decimal
+                Some(usize::from_str(a)?)
+            }
+        },
         _ => None
     };
     let which_fs = cmd.get_one::<String>("os").unwrap();
@@ -100,7 +112,19 @@ pub fn put(cmd: &clap::ArgMatches) -> STDRESULT {
                 _ => {}
             }
             let load_addr: Option<usize> = match cmd.get_one::<String>("addr") {
-                Some(a) => Some(usize::from_str(a)?),
+                Some(a) => {
+                    // Check if the address is in hex format (starts with $ or 0x)
+                    if a.starts_with("$") {
+                        // Parse as hex, skipping the $ prefix
+                        Some(usize::from_str_radix(&a[1..], 16)?)
+                    } else if a.to_lowercase().starts_with("0x") {
+                        // Parse as hex, skipping the 0x prefix
+                        Some(usize::from_str_radix(&a[2..], 16)?)
+                    } else {
+                        // Parse as decimal
+                        Some(usize::from_str(a)?)
+                    }
+                },
                 _ => None
             };
             let mut disk = crate::create_fs_from_file(img_path)?;

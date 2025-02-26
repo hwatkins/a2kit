@@ -45,15 +45,16 @@ fn main() -> Result<(),Box<dyn std::error::Error>>
             Some(path) => path,
             _ => "/"
         };
+        let verbose = cmd.get_flag("verbose");
         let mut disk = a2kit::create_fs_from_file_or_stdin(cmd.get_one::<String>("dimg"))?;
         return if cmd.get_flag("generic") {
-            let rows = disk.catalog_to_vec(&path_in_img)?;
+            let rows = disk.catalog_to_vec_with_options(&path_in_img, verbose)?;
             for row in rows {
                 println!("{}",row);
             }
             Ok(())
         } else {
-            disk.catalog_to_stdout(&path_in_img)
+            disk.catalog_to_stdout_with_options(&path_in_img, verbose)
         }
     }
     
@@ -228,7 +229,7 @@ fn main() -> Result<(),Box<dyn std::error::Error>>
                 log::warn!("line number expressions must be manually adjusted");
                 println!("{}",&new_prog);
                 Ok(())
-            }
+            },
             _ => Err(Box::new(CommandError::UnsupportedItemType))
         };
     }
@@ -476,7 +477,7 @@ fn main() -> Result<(),Box<dyn std::error::Error>>
         let path_in_img = cmd.get_one::<String>("file").expect(RCH);
         let mut disk = a2kit::create_fs_from_file(&path_to_img)?;
         disk.unprotect(path_in_img)?;
-        return a2kit::save_img(&mut disk,path_to_img);
+        return a2kit::save_img(&mut disk,&path_to_img);
     }
     
     // Delete a file or directory
@@ -566,4 +567,3 @@ fn main() -> Result<(),Box<dyn std::error::Error>>
     return Err(Box::new(CommandError::InvalidCommand));
 
 }
-

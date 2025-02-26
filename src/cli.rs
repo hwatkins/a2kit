@@ -125,7 +125,7 @@ Detokenize from image: `a2kit get -f prog -t atok -d myimg.dsk | a2kit detokeniz
                 .value_name("TYPE").required(false).value_parser(get_put_types)
             )
             .arg(dimg_arg_opt.clone())
-            .arg(Arg::new("addr").long("addr").short('a').help("load-address if applicable").value_name("ADDRESS").required(false))
+            .arg(Arg::new("addr").long("addr").short('a').help("load-address if applicable (decimal or hex with $ or 0x prefix)").value_name("ADDRESS").required(false))
             .about("read from stdin, write to local or disk image")
             .after_help(RNG_HELP)
     );
@@ -153,7 +153,7 @@ Detokenize from image: `a2kit get -f prog -t atok -d myimg.dsk | a2kit detokeniz
             .arg(Arg::new("type").long("type").short('t').help("type of the item")
                 .value_name("TYPE").required(true).value_parser(pack_unpack_types)
             )
-            .arg(Arg::new("addr").long("addr").short('a').help("load-address if applicable").value_name("ADDRESS").required(false))
+            .arg(Arg::new("addr").long("addr").short('a').help("load-address if applicable (decimal or hex with $ or 0x prefix)").value_name("ADDRESS").required(false))
             .arg(Arg::new("block").long("block").short('b').help("size of block in bytes if needed")
                 .value_name("BYTES")
                 .value_parser(value_parser!(u16).range(128..=16384))
@@ -326,6 +326,7 @@ Detokenize from image: `a2kit get -f prog -t atok -d myimg.dsk | a2kit detokeniz
         Command::new("catalog")
             .arg(arg!(-f --file <PATH> "path of directory inside disk image").required(false))
             .arg(arg!(--generic "use generic output format").action(ArgAction::SetTrue))
+            .arg(arg!(-v --verbose "show additional information like load addresses").action(ArgAction::SetTrue))
             .arg(dimg_arg_opt.clone())
             .visible_alias("cat")
             .visible_alias("dir")
@@ -358,7 +359,7 @@ Detokenize from image: `a2kit get -f prog -t atok -d myimg.dsk | a2kit detokeniz
     main_cmd = main_cmd.subcommand(
         Command::new("tokenize")
             .arg(
-                Arg::new("addr").short('a').long("addr").help("address of tokenized code (Applesoft only)").value_name("ADDRESS")
+                Arg::new("addr").short('a').long("addr").help("address of tokenized code (Applesoft only) (decimal or hex with $ or 0x prefix)").value_name("ADDRESS")
                     .required(false),
             )
             .arg(
